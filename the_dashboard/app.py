@@ -17,11 +17,11 @@ from data.dataframes.neo_df import neo_to_dataframe
 from data.dataframes.locations import LOCATIONS_SWEDEN
 
 
-
-# Import the graphs
+# Import the graphs & functions
 from graphs.weather_charts import cloud_visibility_chart, temp_humidity_chart  # noqa: E402
 from graphs.neo_charts import neo_summary_metrics, neo_scatter_plot  # noqa: E402
 from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_score  # noqa: E402
+#from functions.background import set_bg_local  # noqa: E402
 
 # Fetching/Loading and caching data from APIs
 
@@ -42,7 +42,6 @@ def get_neo_cached(date):
     neo_df = neo_to_dataframe(raw_neo)
     return neo_df
 
-
 # helper function for the APOD banner
 def apod_banner(url: str, height: int = 350):
     st.markdown(
@@ -62,13 +61,18 @@ def apod_banner(url: str, height: int = 350):
 ## Set up the layout of the dashboard
 st.set_page_config(page_title="Astral Forecast", layout="wide")
 
+# Changing background to something cooler once I have time to fix it
+#set_bg_local("functions/bg_stars.jpg")
+
+
 # get the apod image and data
 data = get_apod_cached()
 
-st.title("Astral Forecast")
+#st.caption("🔭 Astronomy Picture of the Day")
+st.title("Stargazing Forecast")
 
 # Short intro
-st.write("Clear skies or cosmic chaos? Sweden’s stargazing conditions tonight.")
+st.write("NASA’s Astronomy Picture of the Day.")
 
 # Banner using the helper function
 apod_banner(data["url"], height=350)
@@ -138,10 +142,14 @@ with tab1:
         with col_b:
             min_cloud = int(night["cloud_cover"].min())
             st.metric("☁️ Cloud coverage (night)", f"{min_cloud}%")
+            with col_b:
+                st.caption("Lower cloud cover = more visible sky")
+
 
         with col_c:
             max_vis = night["visibility_km"].max()
             st.metric("🔭 Max visibility (night)", f"{max_vis:.1f} km")
+            st.caption("Higher visibility = clearer atmosphere")
 
         with col_d:
             st.metric("☀️ Sunset", astro_info["sunset"])
@@ -153,23 +161,23 @@ with tab2:
         st.warning("Select a location to see weather details.")
     else:
         st.subheader("Cloud cover & visibility (night hours)")
+        st.write("Cloud cover and visibility are the two main factors that determine how clear the night sky will look. Fewer clouds mean more stars are unobstructed, and higher visibility means less haze or moisture in the air. Together, they give a quick sense of how good the sky will be for stargazing tonight.")
+        st.markdown("---")
         cloud_visibility_chart(night)
-        st.caption(
-            "**Solid line** = Cloud cover (%) — lower is better\n"
-            "**Dashed gray line** = Visibility (km) — higher is better"
-        )
+        st.caption("Higher visibility = clearer atmosphere")
 
         st.subheader("Temperature & humidity (night hours)")
+        st.write("Temperature and humidity also impact stargazing conditions. Cooler temperatures often correlate with clearer skies, while high humidity can lead to haze or fog that obscures the stars. Monitoring these metrics helps you anticipate both how clear the sky will be and how comfortable you’ll be standing outside. Basically: this tells you whether you’ll enjoy the view of the Milky Way or just turn into a popsicle. Check both before heading out so you know whether to bring a jacket, a thermos, or… just stay inside.”")
+        st.markdown("---")
         temp_humidity_chart(night)
-        st.caption(
-            "**Solid line** = Temperature (°C)\n"
-            "**Dashed gray line** = Humidity (%) — "
-            "higher humidity means haze & condensation"
-        )
+        st.caption("High humidity can cause haze and reduce clarity")
 
 # Tab 3: Near-Earth Objects 
 
 with tab3:
+
+    st.caption("Near-Earth Objects visibile today.")
+
     if neo_df is None:
         st.warning("Select a location to see NEO data.")
     else:
@@ -199,6 +207,13 @@ with tab4:
 
         with col1:
             st.metric("Overall stargazing score (night)", f"{overall_score:.0f} / 100")
+
+        with st.expander("How this score is calculated"):
+            st.write("""
+        This score reflects tonight’s overall sky quality. It takes into account cloud cover, visibility, humidity, and moon illumination. Each component is scaled and blended into a 0–100 rating.The higher the score, the better the stargazing conditions!
+        """)
+
+        st.markdown("---")
 
         # Score verdict
         score_10 = overall_score / 10
