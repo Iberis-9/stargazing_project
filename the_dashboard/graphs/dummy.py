@@ -1,42 +1,45 @@
-def cloud_visibility_chart(night_df: pd.DataFrame):
-    """Line chart: cloud cover + visibility over night hours."""
-    cloud_vis = night_df[["datetime", "cloud_cover", "visibility_km"]].copy()
-    cloud_vis["time"] = cloud_vis["datetime"].dt.strftime("%H:%M")
 
-    # Shared color scale + legend for both layers
-    color = alt.Color(
-        "series:N",
-        scale=alt.Scale(
-            domain=["Cloud cover", "Visibility"],
-            range=["#79B6DC", "#4C3E78"],  # pick whatever colors you like
-        ),
-        legend=alt.Legend(title="Metric"),
-    )
-    # Cloud cover line
-    cloud_line = (
-        alt.Chart(cloud_vis)
-        .transform_calculate(series="'Cloud cover'")
-        .mark_line()
+"""OG Stargazing score chart code, kept for reference."""
+
+
+def plot_stargazing_score(score_df: pd.DataFrame, location_name: str):
+    if score_df is None or score_df.empty:
+        st.info("No stargazing score available for tonight.")
+        return
+
+    df = score_df.copy()
+    df["time"] = df["datetime"].dt.strftime("%H:%M")
+
+    chart = (
+        alt.Chart(df)
+        .mark_line(strokeWidth=2, opacity=0.9, color = "#79B6DC")
         .encode(
             x=alt.X("datetime:T", title="Time"),
-            y=alt.Y("cloud_cover:Q", title="Cloud cover (%)"),
-            color=color,
-            tooltip=["time", "cloud_cover", "visibility_km"],
+            y=alt.Y("score:Q", title="Stargazing score (0–100)", scale=alt.Scale(domain=[0, 100])),
+            tooltip=["time", "score"],
         )
     )
-    # Visibility line (dashed, separate y-axis)
-    vis_line = (
-        alt.Chart(cloud_vis)
-        .transform_calculate(series="'Visibility'")
-        .mark_line(strokeDash=[4, 4])
-        .encode(
-            x="datetime:T",
-            y=alt.Y("visibility_km:Q", title="Visibility (km)"),
-            color=color,
-            tooltip=["time", "cloud_cover", "visibility_km"],
-        )
-    )
-    st.altair_chart(
-        (cloud_line + vis_line).resolve_scale(y="independent"),
-        use_container_width=True,
-    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+
+
+
+
+    #CHART_BG = "rgba(255, 255, 255, 0.9)"
+
+st.markdown(
+    """
+    <style>
+    /* Style the container that holds Altair/Vega-Lite charts */
+    div[data-testid="stVegaLiteChart"] {
+        background-color: rgba(255, 255, 255, 0.9);  /* light card background */
+        border-radius: 18px;                         /* rounded corners */
+        padding: 1rem 1.2rem 1.2rem 1.2rem;          /* space around chart */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        overflow: hidden;                           /* optional: soft shadow */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)

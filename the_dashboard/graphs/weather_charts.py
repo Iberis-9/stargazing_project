@@ -3,8 +3,13 @@ import streamlit as st
 import pandas as pd
 
 
+# Helper function for styling the graphs with a rounded background
+
+
+# Visibility + cloud cover chart
+
 def cloud_visibility_chart(night_df: pd.DataFrame):
-    """Line chart: cloud cover + visibility over night hours."""
+    # Line chart: cloud cover + visibility over night hours
     cloud_vis = night_df[["datetime", "cloud_cover", "visibility_km"]].copy()
     cloud_vis["time"] = cloud_vis["datetime"].dt.strftime("%H:%M")
 
@@ -13,7 +18,7 @@ def cloud_visibility_chart(night_df: pd.DataFrame):
         "series:N",
         scale=alt.Scale(
             domain=["Cloud cover", "Visibility"],
-            range=["#79B6DC", "#4C3E78"],  # pick whatever colors you like
+            range=["#BE8BFC", "#FFE699"],  # first colour is clouds, second is visibility
         ),
         legend=alt.Legend(title="Metric"),
     )
@@ -41,16 +46,27 @@ def cloud_visibility_chart(night_df: pd.DataFrame):
             tooltip=["time", "cloud_cover", "visibility_km"],
         )
     )
-    st.altair_chart(
-        (cloud_line + vis_line).resolve_scale(y="independent"),
-        use_container_width=True,
+    main_chart = (
+        (cloud_line + vis_line)
+        .resolve_scale(y="independent")
+        .properties(
+            width=1300,    
+            height=360,
+            padding={"top": 30, "right": 10, "bottom": 5, "left": 20}
+        )
+        .configure_view(stroke=None)
     )
+    # IMPORTANT: no use_container_width here, or Streamlit will stretch it again
+    st.altair_chart(main_chart, use_container_width=False)
 
+    #st.altair_chart(
+    #    (cloud_line + vis_line).resolve_scale(y="independent"),
+    #   width = "content", use_container_width=True,)
 
-
+# Humidity + temperature chart
 
 def temp_humidity_chart(night_df: pd.DataFrame):
-    """Line chart: temperature + humidity over night hours."""
+    # Line chart: temperature + humidity over night hours.
     temp_hum = night_df[["datetime", "temp_c", "humidity"]].copy()
     temp_hum["time"] = temp_hum["datetime"].dt.strftime("%H:%M")
 
@@ -59,7 +75,7 @@ def temp_humidity_chart(night_df: pd.DataFrame):
         "series:N",
         scale=alt.Scale(
             domain=["Temperature", "Humidity"],
-            range=["#79B6DC", "#2C324E"],  
+            range=["#BE8BFC", "#FFBB96"],  
         ),
         legend=alt.Legend(title="Metric"),
     )
@@ -87,11 +103,24 @@ def temp_humidity_chart(night_df: pd.DataFrame):
             tooltip=["time", "temp_c", "humidity"],
         )
     )
-
-    st.altair_chart(
-        (temp_line + hum_line).resolve_scale(y="independent"),
-        use_container_width=True
+    main_chart = (
+        (temp_line + hum_line)
+        .resolve_scale(y="independent")
+        .properties(
+            width=1300,   
+            height=360,
+            padding={"top": 30, "right": 20, "bottom": 5, "left": 20}
+        )
+        .configure_view(stroke=None)
     )
+
+    # IMPORTANT: no use_container_width here, or Streamlit will stretch it again
+    st.altair_chart(main_chart, use_container_width=False)
+    
+    
+    #st.altair_chart(
+    #   (temp_line + hum_line).resolve_scale(y="independent"),
+    #    width = "content", use_container_width=True)
 
 
 

@@ -71,7 +71,6 @@ def compute_stargazing_score(night_df: pd.DataFrame, astro_info: dict) -> pd.Dat
 
 
 def plot_stargazing_score(score_df: pd.DataFrame, location_name: str):
-    """Line chart of stargazing score over night hours."""
     if score_df is None or score_df.empty:
         st.info("No stargazing score available for tonight.")
         return
@@ -81,12 +80,16 @@ def plot_stargazing_score(score_df: pd.DataFrame, location_name: str):
 
     chart = (
         alt.Chart(df)
-        .mark_line(strokeWidth=2, opacity=0.9, color = "#79B6DC")
+        .mark_line(strokeWidth=2, opacity=0.9, color = "#E27ECF")
         .encode(
             x=alt.X("datetime:T", title="Time"),
             y=alt.Y("score:Q", title="Stargazing score (0–100)", scale=alt.Scale(domain=[0, 100])),
             tooltip=["time", "score"],
-        )
-    )
+        )        ).properties(
+            width = 1300, 
+            height = 360,
+            padding={"top": 30, "right": 20, "bottom": 5, "left": 5}
+    ).configure_view( stroke=None)
+    
+    st.altair_chart(chart, use_container_width=False)
 
-    st.altair_chart(chart, use_container_width=True)

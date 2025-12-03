@@ -21,7 +21,7 @@ from data.dataframes.locations import LOCATIONS_SWEDEN
 from graphs.weather_charts import cloud_visibility_chart, temp_humidity_chart  # noqa: E402
 from graphs.neo_charts import neo_summary_metrics, neo_scatter_plot  # noqa: E402
 from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_score  # noqa: E402
-#from functions.background import set_bg_local  # noqa: E402
+from functions.background import set_bg_local  # noqa: E402
 
 # Fetching/Loading and caching data from APIs
 
@@ -30,7 +30,7 @@ from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_sc
 def get_apod_cached():
     return get_apod()
 
-@st.cache_data(ttl = 1800)
+@st.cache_data(ttl = 72000 )  #1800 og weather timer
 def get_weather_cached(lat, lon):
     raw_weather = get_weather(lat, lon)
     df_hours, astro_info = weather_to_df(raw_weather)
@@ -62,8 +62,48 @@ def apod_banner(url: str, height: int = 350):
 st.set_page_config(page_title="Astral Forecast", layout="wide")
 
 # Changing background to something cooler once I have time to fix it
-#set_bg_local("functions/bg_stars.jpg")
+set_bg_local("images/backgr.jpg")
 
+# Global sett up of transparent backgrounds for all Altair charts
+
+
+
+# Global CSS for Altair charts
+alt.themes.register('transparent_theme', lambda: {
+    "config": {
+        "background": "transparent",     # outer chart background
+        "view": {
+            "fill": "transparent",       # plot area background
+            "stroke": "transparent",     # remove border
+        },
+    "axis": {
+            "grid": True,
+            "gridColor": "#FFFFFF",      # <<< change this to any color
+            "gridOpacity": 0.3,          # <<< adjust grid transparency
+            "tickColor": "#FFFFFF",      # axis tick marks
+            "labelColor": "#FFFFFF",     # axis label text
+            "titleColor": "#FFFFFF",     # axis title text
+        }
+    }
+})
+
+alt.themes.enable('transparent_theme')
+
+st.markdown(
+    """
+    <style>
+    /* Style the container that holds Altair/Vega-Lite charts */
+    div[data-testid="stVegaLiteChart"] {
+        background-color: rgba(255, 255, 255, 0.12);  /* light card background */
+        border-radius: 18px;                         /* rounded corners */
+        padding: 1rem 1.2rem 1.2rem 1.2rem;          /* space around chart */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                  /* optional: soft shadow */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # get the apod image and data
 data = get_apod_cached()
@@ -92,7 +132,7 @@ st.markdown("---")
 st.write("Discover where in Sweden the skies are clear tonight—track cloud cover, visibility, moonlight, and nearby asteroids.")
 
 # LOCATION SELECTION 
-st.header("Choose your stargazing location")
+st.header("Choose your location")
 
 location_name = st.selectbox("Location", list(LOCATIONS_SWEDEN.keys()))
 coords = LOCATIONS_SWEDEN[location_name]
@@ -162,15 +202,19 @@ with tab2:
     else:
         st.subheader("Cloud cover & visibility (night hours)")
         st.write("Cloud cover and visibility are the two main factors that determine how clear the night sky will look. Fewer clouds mean more stars are unobstructed, and higher visibility means less haze or moisture in the air. Together, they give a quick sense of how good the sky will be for stargazing tonight.")
-        st.markdown("---")
+        st.write("")
+        #with st.container(border=True):
         cloud_visibility_chart(night)
         st.caption("Higher visibility = clearer atmosphere")
-
+            
+        
         st.subheader("Temperature & humidity (night hours)")
         st.write("Temperature and humidity also impact stargazing conditions. Cooler temperatures often correlate with clearer skies, while high humidity can lead to haze or fog that obscures the stars. Monitoring these metrics helps you anticipate both how clear the sky will be and how comfortable you’ll be standing outside. Basically: this tells you whether you’ll enjoy the view of the Milky Way or just turn into a popsicle. Check both before heading out so you know whether to bring a jacket, a thermos, or… just stay inside.”")
-        st.markdown("---")
+        st.write("")
+        #with st.container(border=True):
         temp_humidity_chart(night)
         st.caption("High humidity can cause haze and reduce clarity")
+            
 
 # Tab 3: Near-Earth Objects 
 

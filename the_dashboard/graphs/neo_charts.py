@@ -48,18 +48,24 @@ def neo_summary_metrics(neo_df: pd.DataFrame) -> None:
     col1, col2, col3, col4 = st.columns([1, 1.6, 1.6, 1], gap="large")
 
     with col1:
-        st.metric("☄️ NEOs today", total)
+        with st.container(border=True):
+            st.metric("☄️ NEOs today", total)
+            st.caption(" ")
 
     with col2:
-        st.metric("🛰 Closest pass", closest_text)
-        st.caption(closest_name)
+        with st.container(border=True):
+            st.metric("🛰 Closest pass", closest_text)
+            st.caption(closest_name)
 
     with col3:
-        st.metric("🪨 Largest object", largest_text)
-        st.caption(largest_name)
+        with st.container(border=True):
+            st.metric("🪨 Largest object", largest_text)
+            st.caption(largest_name)
 
     with col4:
-        st.metric("⚠️ Potentially hazardous", hazardous_count)
+        with st.container(border=True):
+            st.metric("⚠️ Potentially hazardous", hazardous_count)
+            st.caption(" ")
 
 
 
@@ -83,7 +89,7 @@ def neo_scatter_plot(neo_df: pd.DataFrame):
 
     chart = (
         alt.Chart(df)
-        .mark_circle(size=150, opacity=0.7)
+        .mark_circle(size=280, opacity=0.8)
         .encode(
             x=alt.X(
                 "miss_distance_lunar:Q",
@@ -96,7 +102,7 @@ def neo_scatter_plot(neo_df: pd.DataFrame):
             color=alt.Color(
                 "hazardous:N",
                 title="Potentially hazardous",
-                scale=alt.Scale(domain=[False, True], range=["#888888", "#B51747"])
+                scale=alt.Scale(domain=[False, True], range=["#E6D8F7", "#B51747"])
             ),
             tooltip=[
                 "name:N",
@@ -105,7 +111,10 @@ def neo_scatter_plot(neo_df: pd.DataFrame):
                 "velocity_km_s:Q",
                 "hazardous:N",
             ],
-        )
-    )
-
-    st.altair_chart(chart, use_container_width=True)
+        ).properties(
+            width = 1300, 
+            height = 360,
+            padding={"top": 30, "right": 10, "bottom": 5, "left": 20}
+    ).configure_view(stroke = None)
+)
+    st.altair_chart(chart, use_container_width=False)
