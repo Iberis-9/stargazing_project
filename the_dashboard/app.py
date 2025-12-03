@@ -21,7 +21,7 @@ from data.dataframes.locations import LOCATIONS_SWEDEN
 from graphs.weather_charts import cloud_visibility_chart, temp_humidity_chart  # noqa: E402
 from graphs.neo_charts import neo_summary_metrics, neo_scatter_plot  # noqa: E402
 from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_score  # noqa: E402
-from functions.background import set_bg_local  # noqa: E402
+from functions.background import set_bg_url  # noqa: E402
 from functions.moon_phase import get_phase_info
 
 # Fetching/Loading and caching data from APIs
