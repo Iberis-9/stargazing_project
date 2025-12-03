@@ -63,7 +63,7 @@ def apod_banner(url: str, height: int = 350):
 st.set_page_config(page_title="Stargazing Forecast", layout="wide")
 
 # Changing background to something cooler once I have time to fix it
-set_bg_local("images/backgr.jpg")
+set_bg_url("https://raw.githubusercontent.com/Iberis-9/streamlit_nod/93f63806a3964ef47eaa24f2c53580dbbf260ba5/the_dashboard/images/backgr.jpg")
 
 
 # Global setup for Altair charts, making them transparent and styling axes
