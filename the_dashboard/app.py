@@ -22,6 +22,7 @@ from graphs.weather_charts import cloud_visibility_chart, temp_humidity_chart  #
 from graphs.neo_charts import neo_summary_metrics, neo_scatter_plot  # noqa: E402
 from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_score  # noqa: E402
 from functions.background import set_bg_local  # noqa: E402
+from functions.moon_phase import get_phase_info
 
 # Fetching/Loading and caching data from APIs
 
@@ -59,16 +60,13 @@ def apod_banner(url: str, height: int = 350):
         unsafe_allow_html=True
     )
 ## Set up the layout of the dashboard
-st.set_page_config(page_title="Astral Forecast", layout="wide")
+st.set_page_config(page_title="Stargazing Forecast", layout="wide")
 
 # Changing background to something cooler once I have time to fix it
 set_bg_local("images/backgr.jpg")
 
-# Global sett up of transparent backgrounds for all Altair charts
 
-
-
-# Global CSS for Altair charts
+# Global setup for Altair charts, making them transparent and styling axes
 alt.themes.register('transparent_theme', lambda: {
     "config": {
         "background": "transparent",     # outer chart background
@@ -109,7 +107,7 @@ st.markdown(
 data = get_apod_cached()
 
 #st.caption("🔭 Astronomy Picture of the Day")
-st.title("Stargazing Forecast")
+st.markdown("## Stargazing Forecast — *Tonight’s Skies in Sweden*")
 
 # Short intro
 st.write("NASA’s Astronomy Picture of the Day.")
@@ -129,7 +127,7 @@ with st.expander("About today's image"):
 st.markdown("---")
 
 # Short description of what my dash/app does
-st.write("Discover where in Sweden the skies are clear tonight—track cloud cover, visibility, moonlight, and nearby asteroids.")
+st.write("See where Sweden gets the best stars tonight—watch the clouds, visibility, moonlight, and the asteroids cruising by.")
 
 # LOCATION SELECTION 
 st.header("Choose your location")
@@ -164,7 +162,7 @@ tab1, tab2, tab3, tab4 = st.tabs(
 )
 
 #  Tab 1: Overview 
-
+# The brighter the Moon, the fewer stars you’ll see. Low illumination gives the darkest skies.
 with tab1:
     if night is None or astro_info is None:
         st.warning("Select a location to see tonight's overview.")
@@ -172,13 +170,18 @@ with tab1:
         st.subheader(f"Tonight in {location_name}")
 
         col_a, col_b, col_c, col_d = st.columns(4, border=True)
-
+        
         with col_a:
             st.metric(
                 "🌙 Moon phase",
                 astro_info["moon_phase"],
                 f"{astro_info['moon_illumination']}% illuminated"
             )
+            with st.expander("About this Moon phase"):
+                emoji, explanation = get_phase_info(astro_info["moon_phase"])
+                st.markdown(f"### {emoji} {astro_info['moon_phase']}")
+                st.write(explanation)
+
         with col_b:
             min_cloud = int(night["cloud_cover"].min())
             st.metric("☁️ Cloud coverage (night)", f"{min_cloud}%")

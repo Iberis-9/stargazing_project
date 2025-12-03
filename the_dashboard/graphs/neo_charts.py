@@ -102,7 +102,7 @@ def neo_scatter_plot(neo_df: pd.DataFrame):
             color=alt.Color(
                 "hazardous:N",
                 title="Potentially hazardous",
-                scale=alt.Scale(domain=[False, True], range=["#E6D8F7", "#B51747"])
+                scale=alt.Scale(domain=[False, True], range=["#D2AFFD", "#BF1863"])
             ),
             tooltip=[
                 "name:N",

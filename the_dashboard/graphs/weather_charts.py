@@ -18,7 +18,7 @@ def cloud_visibility_chart(night_df: pd.DataFrame):
         "series:N",
         scale=alt.Scale(
             domain=["Cloud cover", "Visibility"],
-            range=["#BE8BFC", "#FFE699"],  # first colour is clouds, second is visibility
+            range=["#BE8BFC", "#FFFF99"],  # first colour is clouds, second is visibility
         ),
         legend=alt.Legend(title="Metric"),
     )
@@ -26,7 +26,7 @@ def cloud_visibility_chart(night_df: pd.DataFrame):
     cloud_line = (
         alt.Chart(cloud_vis)
         .transform_calculate(series="'Cloud cover'")
-        .mark_line()
+        .mark_line(strokeWidth=3)
         .encode(
             x=alt.X("datetime:T", title="Time"),
             y=alt.Y("cloud_cover:Q", title="Cloud cover (%)"),
@@ -38,7 +38,7 @@ def cloud_visibility_chart(night_df: pd.DataFrame):
     vis_line = (
         alt.Chart(cloud_vis)
         .transform_calculate(series="'Visibility'")
-        .mark_line(strokeDash=[4, 4])
+        .mark_line(strokeDash=[4, 4], strokeWidth=3)
         .encode(
             x="datetime:T",
             y=alt.Y("visibility_km:Q", title="Visibility (km)"),
@@ -75,7 +75,7 @@ def temp_humidity_chart(night_df: pd.DataFrame):
         "series:N",
         scale=alt.Scale(
             domain=["Temperature", "Humidity"],
-            range=["#BE8BFC", "#FFBB96"],  
+            range=["#BE8BFC", "#FFFF99"],  
         ),
         legend=alt.Legend(title="Metric"),
     )
@@ -83,7 +83,7 @@ def temp_humidity_chart(night_df: pd.DataFrame):
     temp_line = (
         alt.Chart(temp_hum)
         .transform_calculate(series="'Temperature'")
-        .mark_line()
+        .mark_line(strokeWidth=3)
         .encode(
             x=alt.X("datetime:T", title="Time"),
             y=alt.Y("temp_c:Q", title="Temperature (°C)"),
@@ -95,7 +95,7 @@ def temp_humidity_chart(night_df: pd.DataFrame):
     hum_line = (
         alt.Chart(temp_hum)
         .transform_calculate(series="'Humidity'")
-        .mark_line(strokeDash=[4, 4])
+        .mark_line(strokeDash=[4, 4], strokeWidth=3)
         .encode(
             x="datetime:T",
             y=alt.Y("humidity:Q", title="Humidity (%)"),

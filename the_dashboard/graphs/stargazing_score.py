@@ -80,7 +80,7 @@ def plot_stargazing_score(score_df: pd.DataFrame, location_name: str):
 
     chart = (
         alt.Chart(df)
-        .mark_line(strokeWidth=2, opacity=0.9, color = "#E27ECF")
+        .mark_line(strokeWidth=3, opacity=0.9, color = "#BE8BFC")
         .encode(
             x=alt.X("datetime:T", title="Time"),
             y=alt.Y("score:Q", title="Stargazing score (0–100)", scale=alt.Scale(domain=[0, 100])),
