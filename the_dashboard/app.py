@@ -31,7 +31,7 @@ from functions.moon_phase import get_phase_info
 def get_apod_cached():
     return get_apod()
 
-@st.cache_data(ttl = 1800 )  #1800 og weather timer
+@st.cache_data(ttl = 10800)  #1800 og weather timer
 def get_weather_cached(lat, lon):
     raw_weather = get_weather(lat, lon)
     df_hours, astro_info = weather_to_df(raw_weather)
