@@ -15,7 +15,7 @@ from data.api.neo_api import get_neo
 from data.dataframes.weather_df import weather_to_df
 from data.dataframes.neo_df import neo_to_dataframe
 from data.dataframes.locations import LOCATIONS_SWEDEN
-
+from data.api.neo_api import get_neo
 
 # Import the graphs & functions
 from graphs.weather_charts import cloud_visibility_chart, temp_humidity_chart  # noqa: E402
@@ -23,6 +23,7 @@ from graphs.neo_charts import neo_summary_metrics, neo_scatter_plot  # noqa: E40
 from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_score  # noqa: E402
 from functions.background import set_bg_url  # noqa: E402
 from functions.moon_phase import get_phase_info
+from functions.choose_location import choose_location
 
 # Fetching/Loading and caching data from APIs
 
@@ -42,6 +43,12 @@ def get_neo_cached(date):
     raw_neo = get_neo(date)
     neo_df = neo_to_dataframe(raw_neo)
     return neo_df
+
+@st.cache_data(ttl=86400)  # 24h
+def _search_locations_df_cached(q: str):
+    hits = search_locations_raw(q)
+    return locations_to_df(hits, country="Sweden")
+
 
 # helper function for the APOD banner
 def apod_banner(url: str, height: int = 350):
