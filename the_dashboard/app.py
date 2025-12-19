@@ -329,7 +329,7 @@ with tab5:
     c1.caption("How active the northern lights are around your location right now")
 
     c2.metric(
-        "💫 Aurora reach (geomagnetic activity)",
+        "🧲 Aurora reach (geomagnetic activity)",
         "—" if result.kp is None else f"Kp {result.kp:.1f}",
     )
     c2.caption("Higher values mean northern lights can be seen further south")
@@ -339,6 +339,36 @@ with tab5:
         "—" if result.bz_gsm is None else f"{result.bz_gsm:.1f} nT",
     )
     c3.caption("Southward flow makes northern lights more likely")
+
+
+    with st.expander("🔍 What do these metrics mean?"):
+        st.markdown("""
+        **Northern Lights visibility** is estimated using real-time space weather data from NOAA.
+
+        Here’s how to read the indicators above:
+
+        **🔥 Aurora activity nearby**  
+        This shows how strong the *aurora oval* is near your location right now.
+
+        The *aurora oval* is a ring-shaped zone around the Earth’s poles where Northern Lights usually appear.  
+        When this zone becomes stronger or expands southward, aurora can be seen further from the Arctic.
+
+        **🧲 Aurora reach (geomagnetic activity / Kp)**  
+        This describes how disturbed Earth’s magnetic field is.  
+        Higher values mean the aurora oval expands southward, increasing the chance of seeing Northern Lights in Sweden.
+
+        **☀️ Solar wind direction**  
+        This measures how solar wind interacts with Earth’s magnetic field.  
+        A *southward* flow allows more energy into the atmosphere, making aurora more likely.
+
+        **How the score is calculated**  
+        The main score combines:
+        - how strong the aurora zone is near you
+        - how far south aurora activity can reach
+        - current solar wind conditions
+
+        The result is a **0–100 estimate** of how likely you are to see Northern Lights from your selected location tonight.
+        """)
 
 
 
