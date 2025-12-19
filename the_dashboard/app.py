@@ -16,6 +16,9 @@ from data.dataframes.weather_df import weather_to_df
 from data.dataframes.neo_df import neo_to_dataframe
 from data.dataframes.locations import LOCATIONS_SWEDEN
 from data.api.neo_api import get_neo
+from data.api.aurora_api import get_ovation_aurora, get_kp_forecast, get_solar_wind
+from data.dataframes.aurora_df import parse_aurora_bundle
+
 
 # Import the graphs & functions
 from graphs.weather_charts import cloud_visibility_chart, temp_humidity_chart  # noqa: E402
@@ -24,6 +27,8 @@ from graphs.stargazing_score import compute_stargazing_score, plot_stargazing_sc
 from functions.background import set_bg_url  # noqa: E402
 from functions.moon_phase import get_phase_info
 from functions.choose_location import choose_location
+from functions.aurora_score import compute_aurora_chance
+
 
 # Fetching/Loading and caching data from APIs
 
@@ -165,8 +170,8 @@ night = df_hours[df_hours["is_day"] == 0].copy()
 
 
 # Different sections/tabs for different parts of the dashboard
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["Overview", "Weather Overview", "Near-Earth Objects", "Stargazing Score"]
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
+    ["Overview", "Weather Overview", "Near-Earth Objects", "Stargazing Score", "Northern Lights"]
 )
 
 #  Tab 1: Overview 
@@ -287,6 +292,53 @@ with tab4:
         # Chart
         st.markdown("#### Score by hour (night only)")
         plot_stargazing_score(score_df, location_name)
+
+# Tab 5: The Northern Lights
+
+with tab5:
+    st.subheader(f"🌌 Northern Lights chance tonight in {location_name}")
+
+    bundle = parse_aurora_bundle(get_ovation_aurora(), get_kp_forecast(), get_solar_wind())
+    result = compute_aurora_chance(lat, lon, bundle["ovation_df"], bundle["kp_latest"], bundle["solar_wind_now"])
+
+    score = result.chance_0_100
+
+    if score >= 70:
+        verdict = "💫 High chance — look north tonight!"
+    elif score >= 40:
+        verdict = "✨ Possible — worth keeping an eye on the sky"
+    elif score >= 20:
+        verdict = "🌥 Unlikely — conditions are weak"
+    else:
+        verdict = "☁ Very unlikely tonight"
+
+
+    st.metric("Northern Lights visibility chance (tonight)", f"{result.chance_0_100:.0f} / 100")
+    st.caption(result.note)
+    
+    if result.speed is None:
+        st.caption("⚠️ Live solar wind data temporarily unavailable (NOAA) — score may be less accurate.")
+
+
+    c1, c2, c3 = st.columns(3, border=True)
+
+    c1.metric(
+        "🔥 Aurora activity nearby",
+        "—" if result.ovation_prob is None else f"{result.ovation_prob:.0f} / 100",
+    )
+    c1.caption("How active the northern lights are around your location right now")
+
+    c2.metric(
+        "💫 Aurora reach (geomagnetic activity)",
+        "—" if result.kp is None else f"Kp {result.kp:.1f}",
+    )
+    c2.caption("Higher values mean northern lights can be seen further south")
+
+    c3.metric(
+        "☀️💨 Solar wind direction",
+        "—" if result.bz_gsm is None else f"{result.bz_gsm:.1f} nT",
+    )
+    c3.caption("Southward flow makes northern lights more likely")
 
 
 
