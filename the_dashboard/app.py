@@ -154,20 +154,14 @@ night = None
 astro_info = None
 neo_df = None
 
-if coords is not None:
-    lat, lon = coords
 
-    # Fetch weather data for this location (cached)
-    df_hours, astro_info = get_weather_cached(lat, lon)
+# lat/lon now come directly from choose_location
+df_hours, astro_info = get_weather_cached(lat, lon)
 
-    # Fetch today's NEO data (cached)
-    today = date.today()
-    neo_df = get_neo_cached(today)
+today = date.today()
+neo_df = get_neo_cached(today)
 
-    # Only looking at nighttime hours for now
-    night = df_hours[df_hours["is_day"] == 0].copy()
-else:
-    st.info("Custom coordinates not implemented yet.")
+night = df_hours[df_hours["is_day"] == 0].copy()
 
 
 # Different sections/tabs for different parts of the dashboard
