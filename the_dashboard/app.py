@@ -136,11 +136,18 @@ st.markdown("---")
 # Short description of what my dash/app does
 st.write("See where Sweden gets the best stars tonight—watch the clouds, visibility, moonlight, and the asteroids cruising by.")
 
-# LOCATION SELECTION 
-st.header("Choose your location")
+# old location selector
+#st.header("Choose your location")
 
-location_name = st.selectbox("Location", list(LOCATIONS_SWEDEN.keys()))
-coords = LOCATIONS_SWEDEN[location_name]
+#location_name = st.selectbox("Location", list(LOCATIONS_SWEDEN.keys()))
+#coords = LOCATIONS_SWEDEN[location_name]
+
+# LOCATION SELECTION 
+location_name, lat, lon = choose_location(LOCATIONS_SWEDEN)
+
+if lat is None:
+    st.info("Pick a location to load tonight’s forecast.")
+    st.stop()
 
 
 night = None
