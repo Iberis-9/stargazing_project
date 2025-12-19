@@ -1,4 +1,4 @@
-#!/Users/iberis/Documents/GitHub/stargazing_project/.venv/bin/python3.12
+#!/Users/iberis/Documents/GitHub/stargazing_project/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
